@@ -1,24 +1,20 @@
 package doublelinkedlist
 
 type DoubleLinkedList struct {
-	values []node
-	Head   *node
-	Tail   *node
+	Head *node
+	Tail *node
 }
 
 func (list *DoubleLinkedList) Prepend(value any) *any {
 	newNode := node{value, list.Head, nil}
-	newValues := append(make([]node, 0, len(list.values)+1), newNode)
 	if list.Head == nil {
 		list.Head = &newNode
 		list.Tail = &newNode
-		list.values = append(list.values, newNode)
 		return &value
 	}
 	newNode.next = list.Head
 	list.Head.prev = &newNode
 	list.Head = &newNode
-	list.values = append(newValues, list.values...)
 
 	return &value
 }
@@ -28,7 +24,6 @@ func (list *DoubleLinkedList) Append(value any) *any {
 	if list.Tail == nil {
 		list.Head = &newNode
 		list.Tail = &newNode
-		list.values = append(list.values, newNode)
 		return &value
 
 	}
@@ -36,12 +31,30 @@ func (list *DoubleLinkedList) Append(value any) *any {
 	list.Tail.next = &newNode
 	list.Tail = &newNode
 
-	list.values = append(list.values, newNode)
 	return &value
 }
 
+func (list *DoubleLinkedList) Find(value any) int {
+	currentEl := list.Head
+	for i := 0; currentEl != nil; i++ {
+		if currentEl.value != value {
+			currentEl = currentEl.next
+		} else {
+			return i
+		}
+	}
+	return -1
+}
+
+func (list *DoubleLinkedList) DeleteByIndex(index int) any {
+	return 1
+}
+
+func (list *DoubleLinkedList) Delete(value any) int {
+	return 1
+}
+
 func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
-	newValues := make([]node, 0, len(list.values))
 	if list.Head == nil {
 		return list
 	}
@@ -50,10 +63,8 @@ func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
 		next := prevNode.next
 		prevNode.next = prevNode.prev
 		prevNode.prev = next
-		newValues = append(newValues, *prevNode)
 		prevNode = prevNode.next
 	}
-	list.values = newValues
 	head := list.Head
 	list.Head = list.Tail
 	list.Tail = head
@@ -68,5 +79,5 @@ type node struct {
 }
 
 func Create() DoubleLinkedList {
-	return DoubleLinkedList{make([]node, 0), nil, nil}
+	return DoubleLinkedList{nil, nil}
 }
