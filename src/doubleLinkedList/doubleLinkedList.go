@@ -1,4 +1,4 @@
-package linkedList
+package doublelinkedlist
 
 type DoubleLinkedList struct {
 	values []node
