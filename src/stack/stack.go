@@ -1,43 +1,43 @@
 package stack
 
-import (
-	"fmt"
-)
-
-type DoubleLinkedList struct {
-	values []node
-	head   *node
+type Stack struct {
+	values []*node
+	Head   *node
 }
 
-func (list *DoubleLinkedList) push(value any) any {
-	newNode := node{value, list.head, nil}
-	list.values = append(list.values, newNode)
-	if list.head != nil {
-		list.head.next = &newNode
+func (stack *Stack) Push(value any) *any {
+	newNode := node{value, nil}
+	if stack.Head == nil {
+		stack.Head = &newNode
+		stack.values = append(stack.values, &newNode)
+		return &value
 	}
-	list.head = &newNode
+	newNode.next = stack.Head
+	stack.Head = &newNode
 
-	return value
+	stack.values = append(stack.values, &newNode)
+	return &value
 }
 
-func (list *DoubleLinkedList) pop() any {
-	head := list.head
-	list.head = list.head.prev
-	return head.value
+func (stack *Stack) Pop() *any {
+	if stack.Head == nil {
+		return nil
+	}
+	value := stack.Head.value
+	stack.values = stack.values[:len(stack.values)-1]
+	stack.Head = stack.Head.next
+	return &value
+}
+
+func (stack *Stack) Peek() *any {
+	return &stack.Head.value
 }
 
 type node struct {
 	value any
 	next  *node
-	prev  *node
 }
 
-func Test() {
-	list := DoubleLinkedList{make([]node, 0), nil}
-	fmt.Println(list)
-	list.push(1)
-	fmt.Println(list)
-	fmt.Println(list.pop())
-	fmt.Println(list)
-	fmt.Println("Alloha")
+func Create() Stack {
+	return Stack{make([]*node, 0), nil}
 }
