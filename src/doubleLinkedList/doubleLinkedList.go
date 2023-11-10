@@ -1,11 +1,13 @@
 package doublelinkedlist
 
 type DoubleLinkedList struct {
-	Head *node
-	Tail *node
+	Head   *node
+	Tail   *node
+	Length int
 }
 
 func (list *DoubleLinkedList) Prepend(value any) *any {
+	list.Length++
 	newNode := node{value, list.Head, nil}
 	if list.Head == nil {
 		list.Head = &newNode
@@ -20,6 +22,7 @@ func (list *DoubleLinkedList) Prepend(value any) *any {
 }
 
 func (list *DoubleLinkedList) Append(value any) *any {
+	list.Length++
 	newNode := node{value, nil, nil}
 	if list.Tail == nil {
 		list.Head = &newNode
@@ -46,12 +49,53 @@ func (list *DoubleLinkedList) Find(value any) int {
 	return -1
 }
 
-func (list *DoubleLinkedList) DeleteByIndex(index int) any {
-	return 1
+func (list *DoubleLinkedList) DeleteByIndex(index int) bool {
+	if index == 0 {
+		list.Head.delete()
+		list.Head = list.Head.next
+		list.Length--
+		return true
+	} else if index == list.Length-1 {
+		list.Head.delete()
+		list.Head = list.Head.next
+		list.Length--
+		return true
+	}
+	element := list.Head
+	for i := 0; i < list.Length; i++ {
+		if i == index {
+			element.delete()
+			list.Length--
+			return true
+		}
+		element = element.next
+	}
+	return false
 }
 
-func (list *DoubleLinkedList) Delete(value any) int {
-	return 1
+func (list *DoubleLinkedList) Delete(value any) bool {
+	isFound := false
+	element := list.Head
+	i := 0
+	for ; i < list.Length; i++ {
+		if element.value == value {
+			isFound = true
+			break
+		}
+		element = element.next
+	}
+	if !isFound {
+		return false
+	}
+	if i == 0 {
+		list.Head = list.Head.next
+		list.Length--
+	} else if i == list.Length-1 {
+		list.Head = list.Head.next
+		list.Length--
+	}
+	element.delete()
+	return true
 }
 
 func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
@@ -78,6 +122,19 @@ type node struct {
 	prev  *node
 }
 
+func (n *node) delete() *node {
+	if n.next != nil && n.prev != nil {
+		n.next.prev = n.prev
+		n.prev.next = n.next
+	} else if n.next != nil {
+		n.next.prev = nil
+	} else {
+		n.prev.next = nil
+	}
+
+	return n
+}
+
 func Create() DoubleLinkedList {
-	return DoubleLinkedList{nil, nil}
+	return DoubleLinkedList{nil, nil, 0}
 }
