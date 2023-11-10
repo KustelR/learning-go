@@ -1,5 +1,9 @@
 package doublelinkedlist
 
+import (
+	"fmt"
+)
+
 type DoubleLinkedList struct {
 	Head   *node
 	Tail   *node
@@ -135,7 +139,6 @@ func (list *DoubleLinkedList) swap(n1, n2 *node) {
 
 func (list *DoubleLinkedList) Swap(i, j int) {
 	n1, n2 := list.findNode(i), list.findNode(j)
-	//fmt.Println(n1, n2)
 	list.swap(n1, n2)
 }
 
@@ -155,6 +158,16 @@ func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
 	list.Tail = head
 
 	return list
+}
+
+func (list DoubleLinkedList) String() string {
+	values := make([]any, 0, list.Length)
+	next := list.Head
+	for next != nil {
+		values = append(values, next.value)
+		next = next.next
+	}
+	return fmt.Sprintf("%v", values)
 }
 
 func Create() DoubleLinkedList {
