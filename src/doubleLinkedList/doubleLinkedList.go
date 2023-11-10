@@ -37,7 +37,7 @@ func (list *DoubleLinkedList) Append(value any) *any {
 	return &value
 }
 
-func (list *DoubleLinkedList) Find(value any) int {
+func (list *DoubleLinkedList) IndexOf(value any) int {
 	currentEl := list.Head
 	for i := 0; currentEl != nil; i++ {
 		if currentEl.value != value {
@@ -47,6 +47,27 @@ func (list *DoubleLinkedList) Find(value any) int {
 		}
 	}
 	return -1
+}
+
+func (list *DoubleLinkedList) Find(index int) any {
+	currentEl := list.Head
+	for i := 0; i <= index; i++ {
+		if i == index {
+			return currentEl.value
+		}
+	}
+	return nil
+}
+
+func (list *DoubleLinkedList) findNode(index int) *node {
+	currentEl := list.Head
+	for i := 0; i <= index; i++ {
+		if i == index {
+			return currentEl
+		}
+		currentEl = currentEl.next
+	}
+	return nil
 }
 
 func (list *DoubleLinkedList) DeleteByIndex(index int) bool {
@@ -98,6 +119,26 @@ func (list *DoubleLinkedList) Delete(value any) bool {
 	return true
 }
 
+func (list *DoubleLinkedList) swap(n1, n2 *node) {
+	n1.swap(n2)
+	if n1.next == nil {
+		list.Tail = n1
+	} else if n2.next == nil {
+		list.Tail = n2
+	}
+	if n1.prev == nil {
+		list.Head = n1
+	} else if n2.prev == nil {
+		list.Head = n2
+	}
+}
+
+func (list *DoubleLinkedList) Swap(i, j int) {
+	n1, n2 := list.findNode(i), list.findNode(j)
+	//fmt.Println(n1, n2)
+	list.swap(n1, n2)
+}
+
 func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
 	if list.Head == nil {
 		return list
@@ -114,25 +155,6 @@ func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
 	list.Tail = head
 
 	return list
-}
-
-type node struct {
-	value any
-	next  *node
-	prev  *node
-}
-
-func (n *node) delete() *node {
-	if n.next != nil && n.prev != nil {
-		n.next.prev = n.prev
-		n.prev.next = n.next
-	} else if n.next != nil {
-		n.next.prev = nil
-	} else {
-		n.prev.next = nil
-	}
-
-	return n
 }
 
 func Create() DoubleLinkedList {
