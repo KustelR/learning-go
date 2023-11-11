@@ -19,7 +19,6 @@ func (n *node) delete() *node {
 	} else {
 		n.prev.next = nil
 	}
-
 	return n
 }
 
@@ -183,30 +182,26 @@ func (list *DoubleLinkedList) Swap(i, j int) {
 }
 
 func (list *DoubleLinkedList) Sort(fn func(a, b int) (res bool)) {
-	left := list.Head
-	right := list.Tail
-	p := list.findNode(list.Length / 2)
-	i := 0
-	j := list.Length - 1
-	for left.next != nil && i <= j {
-		if fn(left.value, p.value) || left.value == p.value {
-			for right.prev != nil {
-				if !fn(right.value, p.value) || right.value == p.value {
-					right = right.prev
-					left = left.next
-					list.swap(left.prev, right.next)
-					i++
-					j--
-					break
-				}
-			}
-		} else {
-			i++
-			left = left.next
-		}
-		fmt.Println(left.value, right.value, p.value)
-		fmt.Println(list)
+	left := 0
+	right := list.Length - 1
+
+	list.quickSort(fn, left, right)
+}
+
+func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end int) {
+	if start < end {
+		//fmt.Println(list)
+		list.partition(fn, start, end)
+		//list.quickSort(fn, start, p)
+		//list.quickSort(fn, p+1, end)
 	}
+}
+
+func (list *DoubleLinkedList) partition(fn func(a, b int) (res bool), start, end int) int {
+	left := list.findNode(start)
+	right := list.findNode(end)
+	p := list.findNode((end-start)/2 + start)
+
 }
 
 func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
