@@ -23,26 +23,59 @@ func (n *node) delete() *node {
 }
 
 func (n *node) swap(n2 *node) {
-	oldNnext := n.next
-	oldNprev := n.prev
-
-	n.next = n2.next
-	n.prev = n2.prev
-	if n2.next != nil {
-		n.next.prev = n
+	fmt.Println(n, n2)
+	nNext := n.next
+	nPrev := n.prev
+	n2Next := n2.next
+	n2Prev := n2.prev
+	if n2Next != nil {
+		n2Next.prev = n
 	}
-	if n2.prev != nil {
-		n.prev.next = n
+	if n2Prev != nil {
+		n2Prev.next = n
 	}
-	n2.next = oldNnext
-	if oldNnext != nil {
+	n2.next = nNext
+	if nNext != nil {
 		n2.next.prev = n2
 	}
-	n2.prev = oldNprev
-	if oldNprev != nil {
+	n2.prev = nPrev
+	if nPrev != nil {
 		n2.prev.next = n2
 	}
+	n.next = n2Next
+	n.prev = n2Prev
+	n2.next = nNext
+	n2.prev = nPrev
+	/*
+		oldNnext := n.next
+		oldNprev := n.prev
+		fmt.Println(oldNnext, oldNprev)
+		fmt.Println(n, n2)
+		n.next = n2.next
+		n.prev = n2.prev
+		if n2.next != nil {
+			n.next.prev = n
+		}
+		if n2.prev != nil {
+			n.prev.next = n
+		}
+		n2.next = oldNnext
+		if oldNnext != nil {
+			n2.next.prev = n2
+		}
+		n2.prev = oldNprev
+		if oldNprev != nil {
+			n2.prev.next = n2
+		}
+	*/
+	fmt.Println(n, n2)
 }
+
+/*
+func (n node) String() string {
+	return fmt.Sprintf("[DLL node] value: %v, next: %v prev: %v\n", n.value, n.next, n.prev)
+}
+*/
 
 type DoubleLinkedList struct {
 	Head   *node
@@ -191,17 +224,56 @@ func (list *DoubleLinkedList) Sort(fn func(a, b int) (res bool)) {
 func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end int) {
 	if start < end {
 		//fmt.Println(list)
-		list.partition(fn, start, end)
-		//list.quickSort(fn, start, p)
-		//list.quickSort(fn, p+1, end)
+		p := list.partition(fn, start, end)
+		list.quickSort(fn, start, p)
+		list.quickSort(fn, p+1, end)
 	}
 }
 
 func (list *DoubleLinkedList) partition(fn func(a, b int) (res bool), start, end int) int {
+	fmt.Println("new partition")
 	left := list.findNode(start)
 	right := list.findNode(end)
-	p := list.findNode((end-start)/2 + start)
+	partition := (end-start)/2 + start
+	if (end-start)%2 > 0 {
+		partition++
+	}
+	p := list.findNode(partition)
 
+	l := start
+	r := end
+	fmt.Println(left, right, p)
+	for l <= r {
+		for !fn(left.value, p.value) {
+			fmt.Println("l")
+			if left.next == nil {
+				return r
+			}
+			left = left.next
+			l++
+		}
+		for fn(right.value, p.value) {
+			fmt.Println("r")
+			if right.prev == nil {
+				return r
+			}
+			right = right.prev
+			r--
+		}
+		fmt.Println(l, r)
+		if l >= r {
+			break
+		}
+		left = left.next
+		right = right.prev
+		fmt.Println(list)
+		list.swap(left.prev, right.next)
+		l++
+		r--
+		fmt.Println(list)
+	}
+
+	return r
 }
 
 func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
