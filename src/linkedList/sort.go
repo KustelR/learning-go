@@ -21,10 +21,14 @@ func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end
 		if isSorted {
 			return
 		}
-		wg.Add(1)
+
+		wg.Add(2)
 		go func() {
 			defer wg.Done()
 			list.quickSort(fn, start, p, swaps, wg)
+		}()
+		go func() {
+			defer wg.Done()
 			list.quickSort(fn, p+1, end, swaps, wg)
 		}()
 	}
