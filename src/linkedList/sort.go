@@ -1,24 +1,32 @@
-// TODO: make this concurrent
-
 package linkedList
+
+import (
+	"sync"
+)
 
 func (list *DoubleLinkedList) Sort(fn func(a, b int) (res bool)) int {
 	left := 0
 	right := list.Length - 1
 	swaps := 0
+	var wg sync.WaitGroup
 
-	list.quickSort(fn, left, right, &swaps)
+	list.quickSort(fn, left, right, &swaps, &wg)
+	wg.Wait()
 	return swaps
 }
 
-func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end int, swaps *int) {
+func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end int, swaps *int, wg *sync.WaitGroup) {
 	if start < end {
 		isSorted, p := list.partition(fn, start, end, swaps)
 		if isSorted {
 			return
 		}
-		list.quickSort(fn, start, p, swaps)
-		list.quickSort(fn, p+1, end, swaps)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			list.quickSort(fn, start, p, swaps, wg)
+			list.quickSort(fn, p+1, end, swaps, wg)
+		}()
 	}
 }
 
