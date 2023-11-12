@@ -3,7 +3,7 @@ go 1.21.3
 use ./main
 
 use (
-	./src/doubleLinkedList
-	./src/linkedListInt
+	./src/linkedList
+
 	./src/stack
 )

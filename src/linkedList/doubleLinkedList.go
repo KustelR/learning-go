@@ -1,69 +1,8 @@
-package linkedListInt
+package linkedList
 
 import (
 	"fmt"
 )
-
-type node struct {
-	value int
-	next  *node
-	prev  *node
-}
-
-func (n *node) delete() *node {
-	if n.next != nil && n.prev != nil {
-		n.next.prev = n.prev
-		n.prev.next = n.next
-	} else if n.next != nil {
-		n.next.prev = nil
-	} else {
-		n.prev.next = nil
-	}
-	return n
-}
-
-func (n *node) swap(n2 *node) {
-	nNext := n.next
-	nPrev := n.prev
-	n2Next := n2.next
-	n2Prev := n2.prev
-	if *nNext.prev == *n2Prev {
-		n2.next = n2Prev
-		n2.prev = nPrev
-		n.prev = nNext
-		n.next = n2Next
-		return
-	}
-	if nPrev != nil && n2Next != nil && *nPrev == *n2Next {
-		n2.prev = n2Next
-		n2.next = nNext
-		n.next = nPrev
-		n.prev = n2Prev
-		return
-	}
-	if n2Next != nil {
-		n2Next.prev = n
-	}
-	if n2Prev != nil {
-		n2Prev.next = n
-	}
-	if nNext != nil {
-		nNext.prev = n2
-	}
-	if nPrev != nil {
-		nPrev.next = n2
-	}
-	n.next = n2Next
-	n.prev = n2Prev
-	n2.next = nNext
-	n2.prev = nPrev
-}
-
-/*
-func (n node) String() string {
-	return fmt.Sprintf("[DLL node] value: %v, next: %v prev: %v", n.value, n.next, n.prev)
-}
-*/
 
 type DoubleLinkedList struct {
 	Head   *node
@@ -185,16 +124,18 @@ func (list *DoubleLinkedList) Delete(value any) bool {
 
 func (list *DoubleLinkedList) swap(n1, n2 *node) {
 	n1.swap(n2)
-	if n1.next == nil {
-		list.Tail = n1
-	} else if n2.next == nil {
-		list.Tail = n2
-	}
-	if n1.prev == nil {
-		list.Head = n1
-	} else if n2.prev == nil {
-		list.Head = n2
-	}
+	/*
+		if n1.next == nil {
+			list.Tail = n1
+		} else if n2.next == nil {
+			list.Tail = n2
+		}
+		if n1.prev == nil {
+			list.Head = n1
+		} else if n2.prev == nil {
+			list.Head = n2
+		}
+	*/
 }
 
 func (list *DoubleLinkedList) Swap(i, j int) {
@@ -217,33 +158,34 @@ func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end
 			return
 		}
 		list.quickSort(fn, start, p)
-		list.quickSort(fn, p+1, end)
+		list.quickSort(fn, p, end)
 	}
 }
 
 func (list *DoubleLinkedList) partition(fn func(a, b int) (res bool), start, end int) (bool, int) {
 	//fmt.Printf("new partition from %v to %v\n", start, end)
+	//fmt.Println(list)
 	left := list.findNode(start)
 	right := list.findNode(end)
 	partition := (end-start)/2 + start
-	if (end-start)%2 > 0 {
-		partition++
-	}
-	p := list.findNode(partition)
+	p := list.findNode(partition).value
 
 	l := start
 	r := end
 	//fmt.Println(left, right, p)
 	for l <= r {
-		for !fn(left.value, p.value) {
+		for fn(p, left.value) && l != partition {
 			//fmt.Println("l")
+			//fmt.Println("l", l, end, list)
 			if l == end {
-				return true, r
+				//fmt.Println("sorted in l")
+				return true, l
 			}
 			left = left.next
 			l++
+			//fmt.Println(l, partition)
 		}
-		for fn(right.value, p.value) {
+		for fn(right.value, p) {
 			//fmt.Println("r")
 			if r == start {
 				return true, r
@@ -253,6 +195,10 @@ func (list *DoubleLinkedList) partition(fn func(a, b int) (res bool), start, end
 		}
 		//fmt.Println(l, r)
 		if l >= r {
+			if (l == end || r == start) && end-start == 1 {
+				//fmt.Println("sorted in end")
+				return true, l
+			}
 			//fmt.Println("break")
 			break
 		}
@@ -261,11 +207,25 @@ func (list *DoubleLinkedList) partition(fn func(a, b int) (res bool), start, end
 		//fmt.Println(l, left, r, right)
 		//fmt.Println(list, *list.Head)
 		list.swap(left.prev, right.next)
-		//fmt.Println(list)
+		//fmt.Println(l, r)
+		//fmt.Printf("swap %v and %v\n", left.prev.value, right.next.value)
 		l++
 		r--
 	}
 	return false, r
+}
+
+func (list *DoubleLinkedList) IsSorted(fn func(a, b int) bool) bool {
+	lastValue := list.Head.value
+	lastElement := list.Head
+	for lastElement.next != nil {
+		lastElement = lastElement.next
+		if !fn(lastElement.value, lastValue) {
+			return false
+		}
+		lastValue = lastElement.value
+	}
+	return true
 }
 
 func (list *DoubleLinkedList) Reverse() *DoubleLinkedList {
