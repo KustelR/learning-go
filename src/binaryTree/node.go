@@ -4,8 +4,8 @@ import "fmt"
 
 type Node struct {
 	value int
-	left  *Node
-	right *Node
+	Left  *Node
+	Right *Node
 }
 
 func (n *Node) SetValue(value int) {
@@ -19,15 +19,15 @@ func (n *Node) GetValue() int {
 func (n *Node) Add(direction bool, value int) (*Node, error) {
 	newNode := &Node{value: value}
 	if direction {
-		if n.left != nil {
-			return n.left, fmt.Errorf("trying to rewrite already existing branch")
+		if n.Left != nil {
+			return n.Left, fmt.Errorf("trying to rewrite already existing branch")
 		}
-		n.left = newNode
+		n.Left = newNode
 	} else {
-		if n.right != nil {
-			return n.right, fmt.Errorf("trying to rewrite already existing branch")
+		if n.Right != nil {
+			return n.Right, fmt.Errorf("trying to rewrite already existing branch")
 		}
-		n.right = newNode
+		n.Right = newNode
 	}
 	return newNode, nil
 }
