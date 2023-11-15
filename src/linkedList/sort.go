@@ -15,7 +15,13 @@ func (list *DoubleLinkedList) Sort(fn func(a, b int) (res bool)) int {
 	return swaps
 }
 
-func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end int, swaps *int, wg *sync.WaitGroup) {
+func (list *DoubleLinkedList) quickSort(
+	fn func(a, b int) (res bool),
+	start,
+	end int,
+	swaps *int,
+	wg *sync.WaitGroup) {
+
 	if start < end {
 		isSorted, p := list.partition(fn, start, end, swaps)
 		if isSorted {
@@ -34,7 +40,12 @@ func (list *DoubleLinkedList) quickSort(fn func(a, b int) (res bool), start, end
 	}
 }
 
-func (list *DoubleLinkedList) partition(fn func(a, b int) (res bool), start, end int, swaps *int) (bool, int) {
+func (list *DoubleLinkedList) partition(
+	fn func(a, b int) (res bool),
+	start,
+	end int,
+	swaps *int) (bool, int) {
+
 	left := list.findNode(start)
 	right := list.findNode(end)
 	partition := (end-start)/2 + start
